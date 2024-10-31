@@ -1,29 +1,86 @@
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 app = FastAPI()
+security = HTTPBasic()
 
+class User(BaseModel):
+    id: int
+    name: str
+    password: str
+
+class UserManager():
+    def __init__(self):
+        self.runningNumber = 0
+        self.users = []
+    def register(self, name, password):
+        self.runningNumber = self.runningNumber + 1
+        self.users.append(User(
+            id=self.runningNumber,
+            name=name,
+            password=password
+        ))
+    def login(self, username, password):
+        for user in self.users:
+            if user.name == username and user.password == password:
+                return user
+        return False
 class Choice(BaseModel):
-    player: str
     choice: str
 
+class RegisterUser(BaseModel):
+    username: str
+    password: str
+
+userManager = UserManager()
 room = [
     {
         "name": "TestRoom",
+        "player1": "",
+        "player2": "",
         "player1Choice": "",
         "player2Choice": ""
     }
 ]
+
+def login(credential: Annotated[HTTPBasicCredentials, Depends(security)]):
+    user = userManager.login(username=credential.username, password=credential.password)
+    if user:
+        return user
+    else:
+        raise HTTPException(status_code=400, detail="ข้อมูล User ไม่ถูกต้อง")
+
+@app.get("/user/all", dependencies=[Depends(login)])
+def all_user():
+    return userManager.users
+
+@app.post("/user/register")
+def register_user(registerUser: RegisterUser):
+    userManager.register(
+        name=registerUser.username,
+        password=registerUser.password
+    )
+    return "สำเร็จ"
+
+@app.post("/join_room/{is_player1}")
+def join_room(user: Annotated[User, Depends(login)], is_player1: bool):
+    if is_player1:
+        room[0]['player1'] = user.name
+    else:
+        room[0]['player2'] = user.name
+    return 'สำเร็จ'
 
 @app.get("/room_state")
 def get_room_state():
     return room[0]
 
 @app.post("/send_choice")
-def send_choice(choice: Choice):
-    if choice.player == 'player1':
+def send_choice(choice: Choice, user: Annotated[User, Depends(login)]):
+    if room[0]['player1'] == user.name:
         room[0]['player1Choice'] = choice.choice
-    elif choice.player == 'player2':
+    elif room[0]['player2'] == user.name:
         room[0]['player2Choice'] = choice.choice
     else:
         return 'หาผู้เล่นไม่เจอ'
