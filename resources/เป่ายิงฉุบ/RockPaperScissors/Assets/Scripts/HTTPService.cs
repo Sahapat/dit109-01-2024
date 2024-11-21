@@ -8,45 +8,45 @@ namespace RockPaperScissors
 {
     public class HTTPService
     {
-        private readonly string BaseURL;
-        private string Username;
-        private string Password;
+        private string _ServerURL;
+        private string _Username;
+        private string _Password;
 
-        private HTTPService() { }
-        public HTTPService(string baseUrl)
+        public HTTPService(string serverUrl)
         {
-            BaseURL = baseUrl;
+            _ServerURL = serverUrl;
+        }
+        private HTTPService() {}
+
+        public HTTPService SetCredential(string username, string password)
+        {
+            _Username = username;
+            _Password = password;
+            return this;
         }
 
-        public void SetCredentials(string username, string password)
+        private string GetCredential()
         {
-            Username = username;
-            Password = password;
-        }
-
-        private string GetCredentials()
-        {
-            string credentials = $"{Username}:{Password}";
-            string encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
-            return encodedCredentials;
+            string credential = $"{_Username}:{_Password}";
+            string encodedCredential = Convert.ToBase64String(Encoding.UTF8.GetBytes(credential));
+            return encodedCredential;
         }
 
         public async UniTask<string> GetAsync(string parameters)
         {
-            var requestUrl = $"{BaseURL}/{parameters}";
+            var requestUrl = $"{_ServerURL}{parameters}";
             var requester = UnityWebRequest.Get(requestUrl);
-            requester.SetRequestHeader("Authorization", "Basic " + GetCredentials());
+            requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
             var response = (await requester.SendWebRequest()).downloadHandler.text;
-            Debug.Log(response);
             return response;
         }
 
         public async UniTask<string> PostAsync(string parameters, object body)
         {
-            var requestUrl = $"{BaseURL}/{parameters}";
-            var postDataJson = JsonUtility.ToJson(body);
-            var requester = UnityWebRequest.Post(requestUrl, postDataJson, "application/json");
-            requester.SetRequestHeader("Authorization", "Basic " + GetCredentials());
+            var requestUrl = $"{_ServerURL}{parameters}";
+            var dataJson = JsonUtility.ToJson(body);
+            var requester = UnityWebRequest.Post(requestUrl, dataJson, "application/json");
+            requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
             var response = (await requester.SendWebRequest()).downloadHandler.text;
             return response;
         }

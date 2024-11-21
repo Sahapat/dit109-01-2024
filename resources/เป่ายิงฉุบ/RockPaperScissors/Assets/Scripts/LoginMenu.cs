@@ -10,53 +10,40 @@ namespace RockPaperScissors
     public class LoginMenu : MonoBehaviour
     {
         [SerializeField]
-        public TMP_InputField _apiInput;
+        TextMeshProUGUI _DebugText;
         [SerializeField]
-        public TMP_InputField _usernameInput;
+        TMP_InputField _ServerUrl;
         [SerializeField]
-        public TMP_InputField _passwordInput;
+        TMP_InputField _Username;
         [SerializeField]
-        public TextMeshProUGUI _resultText;
+        TMP_InputField _Password;
 
-        private UserStore UserStore => UserStore.Instance;
-        
-        public void HandleApiUrlChanged()
+        UserStore UserStore => UserStore.Instance;
+
+        public void OnServerChanged()
         {
-            UserStore.APIUrl = _apiInput.text;
+            UserStore.APIUrl = _ServerUrl.text;
+        }
+        public void OnUsernameChanged()
+        {
+            UserStore.Username = _Username.text;
+        }
+        public void OnPasswordChanged()
+        {
+            UserStore.Password = _Password.text;
         }
 
-        public void HandleUsernameChanged()
+        public void Login()
         {
-            UserStore.Username = _usernameInput.text;
-        }
-        
-        public void HandlePasswordChanged()
-        {
-            UserStore.Password = _passwordInput.text;
+            DoLogin().Forget();
         }
 
-        public void GetAllUser()
+        private async UniTask DoLogin()
         {
-            DoGetAllUser().Forget();
-        }
-
-        private async UniTask DoGetAllUser()
-        {
-            var httpService = new HTTPService(UserStore.APIUrl);
-            var result = await httpService.GetAsync("user/all");
-            _resultText.text = result;
-        }
-
-        public void GetRoom()
-        {
-            DoGetRoom().Forget();
-        }
-
-        private async UniTask DoGetRoom()
-        {
-            var httpService = new HTTPService(UserStore.APIUrl);
-            var result = await httpService.GetAsync("room_state");
-            _resultText.text = result;
+            var service = new HTTPService(UserStore.APIUrl);
+            service.SetCredential(UserStore.Username, UserStore.Password);
+            var response = await service.GetAsync("/user/all");
+            _DebugText.text = response;
         }
     }
 }
