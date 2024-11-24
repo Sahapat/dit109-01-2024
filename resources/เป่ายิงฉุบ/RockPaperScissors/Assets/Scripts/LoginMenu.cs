@@ -4,13 +4,12 @@ using UnityEngine.UI;
 using TMPro.SpriteAssetUtilities;
 using TMPro;
 using Cysharp.Threading.Tasks;
+using EasyUI.Popup;
 
 namespace RockPaperScissors
 {
     public class LoginMenu : MonoBehaviour
     {
-        [SerializeField]
-        TextMeshProUGUI _DebugText;
         [SerializeField]
         TMP_InputField _ServerUrl;
         [SerializeField]
@@ -42,8 +41,14 @@ namespace RockPaperScissors
         {
             var service = new HTTPService(UserStore.APIUrl);
             service.SetCredential(UserStore.Username, UserStore.Password);
-            var response = await service.GetAsync("/user/all");
-            _DebugText.text = response;
+            try
+            {
+                var response = await service.GetAsync("/user/all");
+            }
+            catch (Exception ex)
+            {
+                Popup.Show("<color=red>Request ERROR</color>", ex.Message);
+            }
         }
     }
 }
