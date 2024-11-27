@@ -164,12 +164,16 @@ def join_room(room_id: str, user: Annotated[User, Depends(login)]):
         return 'สำเร็จ'
     raise HTTPException(400, 'ห้องเต็ม')
 
-@app.delete("/room/{room_id}")
-def delete_room(room_id: str, user: Annotated[User, Depends(login)]):
+@app.post("/room/leave/{room_id}")
+def leave_room(room_id: str, user: Annotated[User, Depends(login)]):
     room_idx = room_idx_by_id.get(room_id, -1)
+    room: Room = rooms[room_idx]
     if room_idx == -1:
        raise HTTPException(404, 'ไม่พบห้อง') 
-    rooms.pop(room_idx)
+    if room.player1 == user.id:
+        rooms.pop(room_idx)
+    elif room.player2 == user.id:
+        rooms[room_idx].player2 = ''
     
 @app.get("/room/{room_id}")
 def get_room_state(room_id: str):
