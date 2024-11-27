@@ -63,5 +63,12 @@ namespace RockPaperScissors
             Main.isLoading = false;
             return room;
         }
+
+        public async UniTask LeaveRoom(string roomId)
+        {
+            await _HTTPService.PostAsync($"room/leave/{roomId}", new());
+            await FetchRoomList();
+            RoomUpdated?.Invoke();
+        }
     }
 }

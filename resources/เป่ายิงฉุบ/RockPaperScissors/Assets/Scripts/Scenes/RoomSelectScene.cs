@@ -46,6 +46,7 @@ namespace RockPaperScissors
         private async UniTask CreateRoomAsync()
         {
             await RoomStore.CreateRoom();
+            Main.UnloadScene("RoomSelect").Forget();
             Main.LoadSceneIfNotPresent("Room").Forget();
         }
 

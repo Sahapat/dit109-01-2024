@@ -11,7 +11,6 @@ namespace RockPaperScissors
         Main Main => Main.Instance;
         UserStore UserStore => UserStore.Instance;
         RoomStore RoomStore => RoomStore.Instance;
-        GameStore GameStore => GameStore.Instance;
 
         void Update()
         {
@@ -29,6 +28,11 @@ namespace RockPaperScissors
         {
             UserStore.GetAllUsers().Forget();
             RoomStore.FetchRoomList().Forget();
+
+            if (RoomStore.CurrentRoom != null)
+            {
+                RoomStore.GetRoomById(RoomStore.CurrentRoom.ID).Forget();
+            }
         }
 
         public void BackLogin()
