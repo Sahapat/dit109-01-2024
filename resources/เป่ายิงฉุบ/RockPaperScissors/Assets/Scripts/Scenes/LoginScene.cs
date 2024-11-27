@@ -1,27 +1,26 @@
-using System;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro.SpriteAssetUtilities;
 using TMPro;
 using Cysharp.Threading.Tasks;
-using EasyUI.Popup;
 
 namespace RockPaperScissors
 {
-    public class LoginMenu : MonoBehaviour
+    public class LoginScene : MonoBehaviour
     {
         [SerializeField]
         TMP_InputField _ServerUrl;
+        [SerializeField]
+        TMP_InputField _APIKey;
         [SerializeField]
         TMP_InputField _Username;
         [SerializeField]
         TMP_InputField _Password;
 
         UserStore UserStore => UserStore.Instance;
+        Main Main => Main.Instance;
 
         public void OnServerChanged()
         {
-            UserStore.APIUrl = _ServerUrl.text;
+            Main.APIUrl = _ServerUrl.text;
         }
         public void OnUsernameChanged()
         {
@@ -31,24 +30,22 @@ namespace RockPaperScissors
         {
             UserStore.Password = _Password.text;
         }
+        public void OnAPIKeyChanged()
+        {
+            Main.APIKey = _APIKey.text;
+        }
 
         public void Login()
         {
-            DoLogin().Forget();
+            LoginAsync().Forget();
         }
 
-        private async UniTask DoLogin()
+        public async UniTask LoginAsync()
         {
-            var service = new HTTPService(UserStore.APIUrl);
-            service.SetCredential(UserStore.Username, UserStore.Password);
-            try
-            {
-                var response = await service.GetAsync("/user/all");
-            }
-            catch (Exception ex)
-            {
-                Popup.Show("<color=red>Request ERROR</color>", ex.Message);
-            }
+            await UserStore.GetAllUsers();
+            Main.UnloadScene("Login").Forget();
+            Main.LoadSceneIfNotPresent("Overlay").Forget();
+            Main.LoadSceneIfNotPresent("RoomSelect").Forget();
         }
     }
 }

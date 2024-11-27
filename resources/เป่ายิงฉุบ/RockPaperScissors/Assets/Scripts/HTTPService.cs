@@ -1,22 +1,26 @@
+using System;
 using UnityEngine;
+using Newtonsoft.Json;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Networking;
-using System;
+using EasyUI.Popup;
 
 namespace RockPaperScissors
 {
     public class HTTPService
     {
         private string _ServerURL;
+        private string _APIKey;
         private string _Username;
         private string _Password;
 
-        public HTTPService(string serverUrl)
+        public HTTPService(string serverUrl, string apiKey)
         {
             _ServerURL = serverUrl;
+            _APIKey = apiKey;
         }
-        private HTTPService() {}
+        private HTTPService() { }
 
         public HTTPService SetCredential(string username, string password)
         {
@@ -34,21 +38,41 @@ namespace RockPaperScissors
 
         public async UniTask<string> GetAsync(string parameters)
         {
-            var requestUrl = $"{_ServerURL}{parameters}";
-            var requester = UnityWebRequest.Get(requestUrl);
-            requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
-            var response = (await requester.SendWebRequest()).downloadHandler.text;
-            return response;
+            try
+            {
+                var uri = new Uri($"{_ServerURL}/{parameters}");
+                var requester = UnityWebRequest.Get($"{_ServerURL}/{parameters}");
+                requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
+                requester.SetRequestHeader("X-API-KEY", _APIKey);
+                Debug.Log($"Requesting to: {uri.ToString()}");
+                var response = (await requester.SendWebRequest()).downloadHandler.text;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Popup.Show("<color=red>Request ERROR</color>", ex.Message);
+                throw;
+            }
         }
 
         public async UniTask<string> PostAsync(string parameters, object body)
         {
-            var requestUrl = $"{_ServerURL}{parameters}";
-            var dataJson = JsonUtility.ToJson(body);
-            var requester = UnityWebRequest.Post(requestUrl, dataJson, "application/json");
-            requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
-            var response = (await requester.SendWebRequest()).downloadHandler.text;
-            return response;
+            try
+            {
+                var uri = new Uri($"{_ServerURL}/{parameters}");
+                var dataJson = JsonConvert.SerializeObject(body);
+                var requester = UnityWebRequest.Post(uri.ToString(), dataJson, "application/json");
+                requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
+                requester.SetRequestHeader("X-API-KEY", _APIKey);
+                Debug.Log($"Requesting to: {uri.ToString()}");
+                var response = (await requester.SendWebRequest()).downloadHandler.text;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Popup.Show("<color=red>Request ERROR</color>", ex.Message);
+                throw;
+            }
         }
     }
 }
