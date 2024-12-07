@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Newtonsoft.Json;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Networking;
@@ -60,7 +59,7 @@ namespace RockPaperScissors
             try
             {
                 var uri = new Uri($"{_ServerURL}/{parameters}");
-                var dataJson = JsonConvert.SerializeObject(body);
+                var dataJson = JsonUtility.ToJson(body);
                 var requester = UnityWebRequest.Post(uri.ToString(), dataJson, "application/json");
                 requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
                 requester.SetRequestHeader("X-API-KEY", _APIKey);

@@ -34,20 +34,20 @@ namespace RockPaperScissors
 
         public void SendChoice(string choice)
         {
-            GameStore.SendChoice(RoomStore.CurrentRoom.ID, choice).Forget();
+            GameStore.SendChoice(RoomStore.CurrentRoom.id, choice).Forget();
         }
 
         private async UniTask CheckWinner()
         {
-            var result = await GameStore.CheckWinner(RoomStore.CurrentRoom.ID);
+            var result = await GameStore.CheckWinner(RoomStore.CurrentRoom.id);
             _FinishText.text = result;
-            _Player1ChoiceText.text = RoomStore.CurrentRoom.P1Choice;
-            _Player2ChoiceText.text = RoomStore.CurrentRoom.P2Choice;
+            _Player1ChoiceText.text = RoomStore.CurrentRoom.p1_choice;
+            _Player2ChoiceText.text = RoomStore.CurrentRoom.p2_choice;
         }
 
         private void UpdateRoomDisplay()
         {
-            if (RoomStore.CurrentRoom.IsGameFinish)
+            if (RoomStore.CurrentRoom.is_game_finish)
             {
                 _GamePlayObj.SetActive(false);
                 _FinishObj.SetActive(true);

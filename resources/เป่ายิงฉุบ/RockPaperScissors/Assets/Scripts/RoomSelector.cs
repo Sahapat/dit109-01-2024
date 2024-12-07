@@ -19,8 +19,8 @@ namespace RockPaperScissors
         public void Setup(RoomModel room)
         {
             _Room = room;
-            var user = UserStore.UserById.GetValueOrDefault(room.Player1, null);
-            _RoomNameText.text = user == null ? room.Player1 : user.Name;
+            var user = UserStore.UserById.GetValueOrDefault(room.player1, null);
+            _RoomNameText.text = user == null ? room.player1 : user.username;
         }
 
         public void HandleClick()
@@ -29,8 +29,8 @@ namespace RockPaperScissors
         }
         private async UniTask HandleClickAsync()
         {
-            await RoomStore.JoinRoomById(_Room.ID);
-            GameStore.RoomId = _Room.ID;
+            await RoomStore.JoinRoomById(_Room.id);
+            GameStore.RoomId = _Room.id;
             Main.UnloadScene("RoomSelect").Forget();
             Main.LoadSceneIfNotPresent("Room").Forget();
         }

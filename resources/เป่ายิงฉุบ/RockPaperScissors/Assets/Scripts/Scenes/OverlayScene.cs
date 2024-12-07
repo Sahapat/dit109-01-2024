@@ -31,7 +31,7 @@ namespace RockPaperScissors
 
             if (RoomStore.CurrentRoom != null)
             {
-                RoomStore.GetRoomById(RoomStore.CurrentRoom.ID).Forget();
+                RoomStore.GetRoomById(RoomStore.CurrentRoom.id).Forget();
             }
         }
 

@@ -1,26 +1,15 @@
-using Newtonsoft.Json;
-
 namespace RockPaperScissors.Models
 {
     public class RoomModel
     {
-        [JsonProperty("id")]
-        public string ID  { get; set; }
-        [JsonProperty("player1")]
-        public string Player1 { get; set; }
-        [JsonProperty("player2")]
+        public string id  { get; set; }
+        public string player1 { get; set; }
         public string Player2 { get; set; }
-        [JsonProperty("p1_choice")]
-        public string P1Choice { get; set; }
-        [JsonProperty("p2_choice")]
-        public string P2Choice { get; set; }
-        [JsonProperty("is_close")]
+        public string p1_choice { get; set; }
+        public string p2_choice { get; set; }
         public bool IsClosed { get; set; }
-        [JsonProperty("is_game_finish")]
-        public bool IsGameFinish { get; set; }
-        [JsonProperty("is_game_start")]
-        public bool IsGameStart { get; set; }
-        [JsonProperty("winner")]
-        public int Winner { get; set; }
+        public bool is_game_finish { get; set; }
+        public bool is_game_start { get; set; }
+        public int winner { get; set; }
     }
 }
