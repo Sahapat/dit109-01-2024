@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, computed_field
 from fastapi.security import HTTPBasic, HTTPBasicCredentials, APIKeyHeader
 
-DATABASE_URL = '/mnt/c/Users/InspireTale/Desktop/database.db'
+DATABASE_URL = './database.db'
 
 async def init_db():
     async with aiosqlite.connect(DATABASE_URL) as db:
@@ -157,7 +157,7 @@ async def login(credential: Annotated[HTTPBasicCredentials, Depends(security)], 
 @app.get("/users", dependencies=[Depends(login)])
 async def all_user(db = Depends(get_db)):
     users = await userManager.all_users(db=db)
-    return { 'users': users }
+    return users
 
 @app.post("/user")
 async def register_user(registerUser: RegisterUser, db=Depends(get_db)):
@@ -170,7 +170,7 @@ async def register_user(registerUser: RegisterUser, db=Depends(get_db)):
 
 @app.get("/rooms")
 def get_rooms(user: Annotated[User, Depends(login)]):
-    return { 'rooms': rooms }
+    return rooms
 
 @app.post("/room")
 def create_room(user: Annotated[User, Depends(login)]):
