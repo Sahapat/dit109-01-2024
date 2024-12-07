@@ -30,7 +30,8 @@ namespace RockPaperScissors
         public async UniTask<List<RoomModel>> FetchRoomList()
         {
             var json = await _HTTPService.GetAsync("rooms");
-            var roomList = JsonUtility.FromJson<List<RoomModel>>(json);
+            var roomResponse = JsonUtility.FromJson<RoomListResponse>(json);
+            var roomList = roomResponse.rooms;
             RoomList = roomList;
             RoomListUpdated?.Invoke();
             return roomList;

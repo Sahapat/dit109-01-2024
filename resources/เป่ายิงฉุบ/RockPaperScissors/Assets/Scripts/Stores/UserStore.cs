@@ -28,7 +28,8 @@ namespace RockPaperScissors
         public async UniTask<List<UserModel>> GetAllUsers()
         {
             var json = await _HTTPService.GetAsync("users");
-            var users = JsonUtility.FromJson<List<UserModel>>(json);
+            var userResponse = JsonUtility.FromJson<UserListResponse>(json);
+            var users = userResponse.users;
             Users = users;
             UserById = users.ToDictionary(v => v.id);
             return users;

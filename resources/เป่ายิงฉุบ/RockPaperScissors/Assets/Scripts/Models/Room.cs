@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace RockPaperScissors.Models
 {
     public class RoomModel
@@ -11,5 +13,10 @@ namespace RockPaperScissors.Models
         public bool is_game_finish { get; set; }
         public bool is_game_start { get; set; }
         public int winner { get; set; }
+    }
+
+    public class RoomListResponse
+    {
+        public List<RoomModel> rooms { get; set; }
     }
 }
