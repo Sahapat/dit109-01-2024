@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using InspireTale.Utils;
-using Newtonsoft.Json;
 using RockPaperScissors.Models;
+using UnityEngine;
 
 namespace RockPaperScissors
 {
@@ -28,9 +28,9 @@ namespace RockPaperScissors
         public async UniTask<List<UserModel>> GetAllUsers()
         {
             var json = await _HTTPService.GetAsync("users");
-            var users = JsonConvert.DeserializeObject<List<UserModel>>(json);
+            var users = JsonUtility.FromJson<List<UserModel>>(json);
             Users = users;
-            UserById = users.ToDictionary(v => v.ID);
+            UserById = users.ToDictionary(v => v.id);
             return users;
         }
     }
