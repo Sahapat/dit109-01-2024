@@ -6,16 +6,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, computed_field
 from fastapi.security import HTTPBasic, HTTPBasicCredentials, APIKeyHeader
 
-DATABASE_URL = './database.db'
+DATABASE_URL = '/mnt/c/Users/InspireTale/Desktop/database.db'
 
 async def init_db():
     async with aiosqlite.connect(DATABASE_URL) as db:
         await db.execute("""
         CREATE TABLE IF NOT EXISTS User (
-            id VARCHAR(36) PRIMARY KEY,
-            name TEXT NOT NULL,
-            password TEXT NOT NULL,
-            point INTEGER NOT NULL DEFAULT 0
+            id TEXT PRIMARY KEY,
+            username TEXT,
+            password TEXT
+        )
+        """)
+        await db.execute("""
+        CREATE TABLE IF NOT EXISTS Leaderboard(
+            user_id TEXT,
+            point INTEGER
         )
         """)
         await db.commit()
@@ -27,41 +32,64 @@ async def get_db():
 
 class User(BaseModel):
     id: str
-    name: str
+    username: str
     password: str
-    point: int
+
+class UserResponse(BaseModel):
+    id: str
+    username: str
+
+class LeaderboardResponse(BaseModel):
+    username: str
+    point: str
 
 class UserManager():
     async def all_users(self, db: aiosqlite.Connection):
-        query = 'SELECT * FROM User'
+        query = 'SELECT id, username FROM User'
         async with db.execute(query) as cr:
             rows = await cr.fetchall()
             users = []
             for row in rows:
-                users.append(User(**dict(row)))
+                users.append(UserResponse(**dict(row)))
             return users
     
-    async def add_point(self, db: aiosqlite.Connection, user_id):
-        query = 'UPDATE User SET point = point + ? WHERE id = ?'
-        async with db.execute(query, (10, user_id)) as cr:
-            await db.commit()
-
-    async def register(self, db: aiosqlite.Connection, name, password):
-        query = 'INSERT INTO User(id, name, password, point) VALUES (?, ?, ?, ?)'
+    async def register(self, db: aiosqlite.Connection, username, password):
+        query = 'INSERT INTO User(id, username, password) VALUES (?, ?, ?)'
         user_id = str(uuid4())
-        async with db.execute(query, (user_id, name, password, 0)) as cr:
+        async with db.execute(query, (user_id, username, password)) as cr:
             await db.commit()
-        async with db.execute('SELECT * FROM User WHERE id = ?', (user_id, )) as cr:
+        leaderboard_query = 'INSERT INTO Leaderboard(user_id, point) VALUES(?, ?)'
+        async with db.execute(leaderboard_query, (user_id, 0)):
+            await db.commit()
+        async with db.execute('SELECT id, username FROM User WHERE id = ?', (user_id, )) as cr:
             row = await cr.fetchone()
-            return User(**dict(row))
+            return UserResponse(**dict(row))
 
     async def login(self, db: aiosqlite.Connection, username, password):
-        query = 'SELECT * FROM User WHERE name = ? and password = ?'
+        query = 'SELECT id, username FROM User WHERE username = ? and password = ?'
         async with db.execute(query, (username, password)) as cr:
             row = await cr.fetchone()
             if row is None:
                 return False
-            return User(**dict(row))
+            return UserResponse(**dict(row))
+
+    async def add_point(self, db: aiosqlite.Connection, user_id):
+        query = 'UPDATE Leaderboard SET point = point + ? WHERE user_id = ?'
+        async with db.execute(query, (10, user_id)) as cr:
+            await db.commit()
+
+    async def leaderboard(self, db: aiosqlite.Connection):
+        query = '''
+            SELECT username, point FROM User u
+            JOIN Leaderboard l ON u.id = l.user_id
+            ORDER BY l.point desc
+        '''
+        async with db.execute(query) as cr:
+            rows = cr.fetchall()
+            records = []
+            for row in rows:
+                records.append(LeaderboardResponse(**dict(row)))
+            return records
 
 rules = {"ค้อน": "กรรไกร", "กรรไกร": "กระดาษ", "กระดาษ": "ค้อน"}
 class Room(BaseModel):
@@ -130,7 +158,7 @@ async def all_user(db = Depends(get_db)):
 async def register_user(registerUser: RegisterUser, db=Depends(get_db)):
     user = await userManager.register(
         db=db,
-        name=registerUser.username,
+        username=registerUser.username,
         password=registerUser.password
     )
     return user
