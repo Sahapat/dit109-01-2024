@@ -1,15 +1,14 @@
-using System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
 
 namespace RockPaperScissors.Models
 {
+    [Serializable]
     public class UserModel
     {
-        public string id { get; set; }
-        public string username { get; set; }
-    }
-
-    public class UserListResponse
-    {
-        public List<UserModel> users { get; set; }
+        [JsonProperty("id")]
+        public string ID;
+        [JsonProperty("username")]
+        public string Name;
     }
 }

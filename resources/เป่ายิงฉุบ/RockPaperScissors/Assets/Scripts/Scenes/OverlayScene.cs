@@ -29,9 +29,9 @@ namespace RockPaperScissors
             UserStore.GetAllUsers().Forget();
             RoomStore.FetchRoomList().Forget();
 
-            if (RoomStore.CurrentRoom != null)
+            if (RoomStore.CurrentRoom != null && RoomStore.CurrentRoom.ID != null)
             {
-                RoomStore.GetRoomById(RoomStore.CurrentRoom.id).Forget();
+                RoomStore.GetRoomById(RoomStore.CurrentRoom.ID).Forget();
             }
         }
 

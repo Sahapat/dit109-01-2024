@@ -1,22 +1,28 @@
-using System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
 
 namespace RockPaperScissors.Models
 {
+    [Serializable]
     public class RoomModel
     {
-        public string id  { get; set; }
-        public string player1 { get; set; }
-        public string Player2 { get; set; }
-        public string p1_choice { get; set; }
-        public string p2_choice { get; set; }
-        public bool IsClosed { get; set; }
-        public bool is_game_finish { get; set; }
-        public bool is_game_start { get; set; }
-        public int winner { get; set; }
-    }
-
-    public class RoomListResponse
-    {
-        public List<RoomModel> rooms { get; set; }
+        [JsonProperty("id")]
+        public string ID;
+        [JsonProperty("player1")]
+        public string Player1;
+        [JsonProperty("player2")]
+        public string Player2;
+        [JsonProperty("p1_choice")]
+        public string P1Choice;
+        [JsonProperty("p2_choice")]
+        public string P2Choice;
+        [JsonProperty("is_close")]
+        public bool IsClosed;
+        [JsonProperty("is_game_finish")]
+        public bool IsGameFinish;
+        [JsonProperty("is_game_start")]
+        public bool IsGameStart;
+        [JsonProperty("winner")]
+        public int Winner;
     }
 }
