@@ -91,14 +91,19 @@ class UserManager():
                 records.append(LeaderboardResponse(**dict(row)))
             return records
 
-rules = {"ค้อน": "กรรไกร", "กรรไกร": "กระดาษ", "กระดาษ": "ค้อน"}
+rules = {"hammer": "scissors", "scissors": "paper", "paper": "hammer"}
 class Room(BaseModel):
     id: str
     player1: str
     player2: str
     p1_choice: str
     p2_choice: str
-    is_closed: bool
+    is_close: bool
+
+    @computed_field
+    @property
+    def is_game_finish(self) -> bool:
+        return self.p1_choice != '' and self.p2_choice != ''
 
     @computed_field()
     @property
@@ -112,7 +117,7 @@ class Room(BaseModel):
         p2 = self.p2_choice
         if p1 == p2:
             return 0
-        return 1 if rules[p1] == p2 else 2 
+        return 1 if rules.get(p1, '') == p2 else 2 
 
 class Choice(BaseModel):
     choice: str
@@ -126,7 +131,7 @@ rooms: List[Room] = []
 room_idx_by_id: Dict[str, str] = {}
 
 def verify_api_key(api_key: str = Depends(APIKeyHeader(name='x-api-key'))):
-    if api_key != 'dit109-sample-server-2024':
+    if api_key != '0':
         raise HTTPException(status_code=401, detail="API Key ไม่ถูกต้อง")
 app = FastAPI(dependencies=[Depends(verify_api_key)])
 app.add_middleware(
@@ -175,7 +180,7 @@ def create_room(user: Annotated[User, Depends(login)]):
         player2='',
         p1_choice='',
         p2_choice='',
-        is_closed=False
+        is_close=False
     )
     rooms.append(room)
     room_idx_by_id[room.id] = len(rooms) - 1
@@ -233,12 +238,15 @@ async def check_winner(room_id: str, user: Annotated[User, Depends(login)], db =
         raise HTTPException(404, 'ไม่พบห้อง')
     
     room: Room = rooms[room_idx]
+    room.is_close = True
     result = room.winner
     if result == 1:
-        await userManager.add_point(db=db, user_id=room.player2)
-        return 'ผู้เล่น 2 ชนะ'
+        if not room.is_close:
+            await userManager.add_point(db=db, user_id=room.player2)
+        return 'Player 2 Win'
     elif result == 2:
-        await userManager.add_point(db=db, user_id=room.player1)
-        return 'ผู้เล่น 1 ชนะ'
+        if not room.is_close:
+            await userManager.add_point(db=db, user_id=room.player1)
+        return 'Player 1 Win'
 
-    return 'เสมอ'
+    return 'Draw'
