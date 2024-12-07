@@ -1,7 +1,12 @@
+using System;
+using Newtonsoft.Json;
+
 namespace RockPaperScissors
 {
+    [Serializable]
     public class ChoiceModel
     {
-        public string choice { get; set; }
+        [JsonProperty("choice")]
+        public string choice;
     }
 }

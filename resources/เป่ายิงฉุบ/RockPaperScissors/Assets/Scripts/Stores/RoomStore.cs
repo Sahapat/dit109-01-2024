@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using InspireTale.Utils;
+using Newtonsoft.Json;
 using RockPaperScissors.Models;
-using UnityEngine;
 
 namespace RockPaperScissors
 {
@@ -30,7 +30,7 @@ namespace RockPaperScissors
         public async UniTask<List<RoomModel>> FetchRoomList()
         {
             var json = await _HTTPService.GetAsync("rooms");
-            var roomList = JsonUtility.FromJson<List<RoomModel>>(json);
+            var roomList = JsonConvert.DeserializeObject<List<RoomModel>>(json);
             RoomList = roomList;
             RoomListUpdated?.Invoke();
             return roomList;
@@ -39,7 +39,7 @@ namespace RockPaperScissors
         public async UniTask<RoomModel> GetRoomById(string roomId)
         {
             var json = await _HTTPService.GetAsync($"room/{roomId}");
-            var room = JsonUtility.FromJson<RoomModel>(json);
+            var room = JsonConvert.DeserializeObject<RoomModel>(json);
             CurrentRoom = room;
             RoomUpdated?.Invoke();
             return  room;
@@ -48,7 +48,7 @@ namespace RockPaperScissors
         {
             Main.isLoading = true;
             var json = await _HTTPService.PostAsync($"room", new());
-            var room = JsonUtility.FromJson<RoomModel>(json);
+            var room = JsonConvert.DeserializeObject<RoomModel>(json);
             CurrentRoom = room;
             RoomUpdated?.Invoke();
             Main.isLoading = false;

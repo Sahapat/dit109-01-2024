@@ -28,7 +28,7 @@ namespace RockPaperScissors
         }
         public void LeaveRoom()
         {
-            RoomStore.LeaveRoom(RoomStore.CurrentRoom.id).Forget();
+            RoomStore.LeaveRoom(RoomStore.CurrentRoom.ID).Forget();
             Main.UnloadScene("Room").Forget();
             Main.LoadSceneIfNotPresent("RoomSelect").Forget();
         }
@@ -37,16 +37,16 @@ namespace RockPaperScissors
         {
             if (RoomStore.CurrentRoom != null)
             {
-                var user1 = UserStore.UserById.GetValueOrDefault(RoomStore.CurrentRoom.player1, null);
+                var user1 = UserStore.UserById.GetValueOrDefault(RoomStore.CurrentRoom.Player1, null);
                 var user2 = UserStore.UserById.GetValueOrDefault(RoomStore.CurrentRoom.Player2, null);
 
                 if (user1 != null)
                 {
-                    player1TMP.text = user1.username;
+                    player1TMP.text = user1.Name;
                 }
                 if (user2 != null)
                 {
-                    player2TMP.text = user2.username;
+                    player2TMP.text = user2.Name;
                 }
 
                 if (user1 != null && user2 != null)
