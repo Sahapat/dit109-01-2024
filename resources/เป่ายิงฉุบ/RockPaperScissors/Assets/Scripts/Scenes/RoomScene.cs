@@ -42,11 +42,11 @@ namespace RockPaperScissors
 
                 if (user1 != null)
                 {
-                    player1TMP.text = user1.name;
+                    player1TMP.text = user1.Name;
                 }
                 if (user2 != null)
                 {
-                    player2TMP.text = user2.name;
+                    player2TMP.text = user2.Name;
                 }
 
                 if (user1 != null && user2 != null)

@@ -6,11 +6,7 @@ namespace RockPaperScissors.Models
     {
         [JsonProperty("id")]
         public string ID { get; set; }
-        [JsonProperty("name")]
-        public string name { get; set; }
-        [JsonProperty("password")]
-        public string password { get; set; }
-        [JsonProperty("point")]
-        public string point { get; set; }
+        [JsonProperty("username")]
+        public string Name { get; set; }
     }
 }

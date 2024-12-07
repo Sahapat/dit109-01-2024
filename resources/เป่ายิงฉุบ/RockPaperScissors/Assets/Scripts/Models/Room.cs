@@ -14,8 +14,10 @@ namespace RockPaperScissors.Models
         public string P1Choice { get; set; }
         [JsonProperty("p2_choice")]
         public string P2Choice { get; set; }
-        [JsonProperty("is_closed")]
+        [JsonProperty("is_close")]
         public bool IsClosed { get; set; }
+        [JsonProperty("is_game_finish")]
+        public bool IsGameFinish { get; set; }
         [JsonProperty("is_game_start")]
         public bool IsGameStart { get; set; }
         [JsonProperty("winner")]

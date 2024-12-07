@@ -20,7 +20,7 @@ namespace RockPaperScissors
         {
             _Room = room;
             var user = UserStore.UserById.GetValueOrDefault(room.Player1, null);
-            _RoomNameText.text = user == null ? room.Player1 : user.name;
+            _RoomNameText.text = user == null ? room.Player1 : user.Name;
         }
 
         public void HandleClick()
