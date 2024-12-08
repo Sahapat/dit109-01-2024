@@ -44,6 +44,8 @@ namespace RockPaperScissors
                 var requester = UnityWebRequest.Get($"{_ServerURL}/{parameters}");
                 requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
                 requester.SetRequestHeader("X-API-KEY", _APIKey);
+                requester.SetRequestHeader("Accept", "application/json");
+                requester.SetRequestHeader("ngrok-skip-browser-warning", "true");
                 Debug.Log($"Requesting to: {uri.ToString()}");
                 var response = (await requester.SendWebRequest()).downloadHandler.text;
                 return response;
@@ -64,6 +66,8 @@ namespace RockPaperScissors
                 var requester = UnityWebRequest.Post(uri.ToString(), dataJson, "application/json");
                 requester.SetRequestHeader("Authorization", $"Basic {GetCredential()}");
                 requester.SetRequestHeader("X-API-KEY", _APIKey);
+                requester.SetRequestHeader("Accept", "application/json");
+                requester.SetRequestHeader("ngrok-skip-browser-warning", "true");
                 Debug.Log($"Requesting to: {uri.ToString()}");
                 var response = (await requester.SendWebRequest()).downloadHandler.text;
                 return response;
