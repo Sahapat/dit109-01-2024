@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, computed_field
 from fastapi.security import HTTPBasic, HTTPBasicCredentials, APIKeyHeader
 
-DATABASE_URL = '/mnt/c/Users/InspireTale/Desktop/database.db'
+DATABASE_URL = './database.db'
 
 async def init_db():
     async with aiosqlite.connect(DATABASE_URL) as db:
