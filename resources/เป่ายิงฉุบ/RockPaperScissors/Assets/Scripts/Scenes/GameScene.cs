@@ -27,7 +27,7 @@ namespace RockPaperScissors
             RoomStore.RoomUpdated += UpdateRoomDisplay;
         }
 
-        void Destroy()
+        void OnDestroy()
         {
             RoomStore.RoomUpdated -= UpdateRoomDisplay;
         }
